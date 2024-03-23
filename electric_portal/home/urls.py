@@ -8,4 +8,5 @@ urlpatterns = [
     path('consultants',views.consultants,name='consultants'),
     path('logout',views.logout,name='logout'),
     path('login',views.login,name='login'),
+    path('export/<fileName>',views.export,name='export'),
 ]

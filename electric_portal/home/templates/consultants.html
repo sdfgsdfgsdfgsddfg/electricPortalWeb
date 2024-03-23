@@ -44,6 +44,7 @@
           <button class="btn" id="home" onclick="location.href='/'"><span class="material-symbols-sharp">home</span><p>الصفحة الرئيسية</p></button>
           <button class="btn" id="addAssay"><span class="material-symbols-sharp">sticky_note_2</span><p>إضافة مقايسة</p></button>
           {% if user.user_role == "manager" %}<button class="btn selected" id="consultants"><span class="material-symbols-sharp">groups</span><p>الإستشاريين</p></button>{% endif %}
+          <button class="btn" id="operations" onclick="location.href='/operations'"><span class="material-symbols-sharp">engineering</span><p>قسم العمليات والصيانة</p></button>
           <button class="btn" id="settings"><span class="material-symbols-sharp">settings</span><p>الضبط</p></button>
         </div>
       </div>
@@ -51,7 +52,7 @@
     <main>
       <div class="content">
         <p class="content-header">الإستشاريين</p>
-        <button class="btn primary list-button" id="addUser">إضافة إستشاري</button>
+        <button class="btn primary list-button2" id="addUser">إضافة إستشاري</button>
         <div class="list" id="usersList">
           {% for d in data %}
           <button data-user="{{d.0}}" class="btn"><p>{{d.0}}</p><div>{{d.1}}</div></button>
@@ -95,7 +96,7 @@
       <form method="POST" data-form class="add-assay" id="addAssayForm" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="add-assay-header">
-          <button type="button" class="btn ibtn back-btn2"><span class="material-symbols-sharp">close</span></button>
+          <button type="button" class="btn ibtn back-btn"><span class="material-symbols-sharp">close</span></button>
           <p class="content-header2">إضافة مقايسة</p>
         </div>
         <div class="add-assay-content">
@@ -109,7 +110,7 @@
               <input type="radio" name="group" id="temp">
               <span>مؤقت</span>
             </label>
-            <input type="hidden" name="checkType" id="checkType">
+            <input type="hidden" name="checkType" id="checkType" value="new">
           </div>
           <br>
           <br>
@@ -119,34 +120,39 @@
           <div class="inputs">
             <div class="material-textfield m2">
               <input placeholder=" " type="text" name="assayNum" maxlength="50" required>
-              <label>رقم المقايسة</label>
+              <label>المقايسة</label>
             </div>
             <div class="material-textfield m2">
               <input placeholder=" " type="text" name="missionNum" maxlength="50" required>
-              <label>رقم المهمة</label>
+              <label>المهمة</label>
             </div>
             <div class="material-textfield m2">
               <input placeholder=" " type="text" name="permitType" maxlength="50" required>
-              <label>نوع التصريح</label>
+              <label>التصريح</label>
             </div>
             <div class="material-textfield m2">
               <input placeholder=" " type="text" name="contractorName" maxlength="50" required>
-              <label>اسم المقاول</label>
+              <label>المقاول</label>
             </div>
             <div class="material-textfield m2">
-              <input placeholder=" " type="text" name="feederNum" maxlength="50" required>
-              <label>رقم المغذي</label>
+              <input placeholder=" " type="text" name="station" maxlength="50" required>
+              <label>المحطة</label>
             </div>
             <div class="material-textfield m2">
-              <select placeholder=" " name="voltageType">
-                <option value="400 / 220">400 / 220</option>
-                <option value="220 / 210">220 / 210</option>
-              </select>
-              <label>نوع الجهد</label>
+              <input placeholder=" " type="text" name="neighborhood" maxlength="50" required>
+              <label>الحي</label>
             </div>
             <div class="material-textfield m2">
-              <input placeholder=" " type="text" name="location" maxlength="50" required>
-              <label>الموقع</label>
+              <input placeholder=" " type="text" name="depthOfExcavation" maxlength="50" required>
+              <label>عمق الحفرية</label>
+            </div>
+            <div class="material-textfield m2">
+              <input placeholder=" " type="text" name="fossilView" maxlength="50" required>
+              <label>عرض الحفرية</label>
+            </div>
+            <div class="material-textfield m2">
+              <input placeholder=" " type="text" name="cableLength" maxlength="50" required>
+              <label>طول الكابل</label>
             </div>
           </div>
           <p class="form-header">الصور</p>
@@ -227,13 +233,6 @@
             <div class="selected-images" id="sourceCards">
             </div>
           </div>
-          <div class="img-picker-group" id="residenceCardsGroup">
-            <p class="img-picker-header">الإقامة</p>
-            <button data-for="residenceCard" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
-            <input type="file" id="residenceCard" accept="image/*" hidden>
-            <div class="selected-images" id="residenceCards">
-            </div>
-          </div>
           <div class="img-picker-group" id="tuvForEquipmentAndDriversGroup">
             <p class="img-picker-header">للمعدات والسائق TUV</p>
             <button data-for="tuvForEquipmentAndDriver" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
@@ -283,36 +282,22 @@
             <div class="selected-images" id="cutterCapacitys">
             </div>
           </div>
-          <div class="img-picker-group" id="meterCapacitysGroup">
-            <p class="img-picker-header">سعة العداد</p>
-            <button data-for="meterCapacity" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
-            <input type="file" id="meterCapacity" accept="image/*" hidden>
-            <div class="selected-images" id="meterCapacitys">
+          <div class="img-picker-group" id="countersGroup">
+            <p class="img-picker-header">العداد</p>
+            <button data-for="counter" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
+            <input type="file" id="counter" accept="image/*" hidden>
+            <div class="selected-images" id="counters">
             </div>
           </div>
-          <div class="img-picker-group" id="depthOfExcavationsGroup">
-            <p class="img-picker-header">عمق الحفرية</p>
-            <button data-for="depthOfExcavation" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
-            <input type="file" id="depthOfExcavation" accept="image/*" hidden>
-            <div class="selected-images" id="depthOfExcavations">
-            </div>
-          </div>
-          <div class="img-picker-group" id="fossilViewsGroup">
-            <p class="img-picker-header">عرض الحفرية</p>
-            <button data-for="fossilView" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
-            <input type="file" id="fossilView" accept="image/*" hidden>
-            <div class="selected-images" id="fossilViews">
-            </div>
-          </div>
-          <div class="img-picker-group" id="cableLengthsGroup">
-            <p class="img-picker-header">طول الكابل</p>
-            <button data-for="cableLength" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
-            <input type="file" id="cableLength" accept="image/*" hidden>
-            <div class="selected-images" id="cableLengths">
+          <div class="img-picker-group" id="missionLocksGroup">
+            <p class="img-picker-header">اقفال المهمة</p>
+            <button data-for="missionLock" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
+            <input type="file" id="missionLock" accept="image/*" hidden>
+            <div class="selected-images" id="missionLocks">
             </div>
           </div>
           <div class="img-picker-group" id="safetyBarriersGroup">
-            <p class="img-picker-header">حواجز السلامة</p>
+            <p class="img-picker-header">الحواجز</p>
             <button data-for="safetyBarrier" type="button" class="btn"><span class="material-symbols-sharp">add</span>إختيار صورة</button>
             <input type="file" id="safetyBarrier" accept="image/*" hidden>
             <div class="selected-images" id="safetyBarriers">

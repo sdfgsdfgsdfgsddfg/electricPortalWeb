@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, Http404
 from .models import *
 from datetime import *
 from django.contrib.auth import logout as logout_auth
 from django.contrib.auth import authenticate
 from django.contrib import auth
 from django.contrib.auth.models import User
+from PIL import Image
+import uuid
+import os
 
 # Create your views here.
 def login(request):
@@ -54,7 +57,6 @@ def consultants(request):
         userTable = UserTable.objects.get(main_user=user)
         context['user'] = userTable
     if request.method == "POST":
-        'consultantName', 'jobNum', 'phoneNumber', 'password'
         ierr = ""
         errtitle = ""
         a = "work"
@@ -124,240 +126,222 @@ def home(request):
             order_type = True
         else:
             order_type = False
+        pdfFileName = f'{uuid.uuid4().hex}.pdf'
         createAssay = Assay.objects.create(
             order_type = order_type,
             assay_num = request.POST["assayNum"],
             mission_num = request.POST["missionNum"],
             permit_type = request.POST["permitType"],
             contractor_name = request.POST["contractorName"],
-            feeder_num = request.POST["feederNum"],
-            voltage_type = request.POST["voltageType"],
-            location = request.POST["location"],
+            station = request.POST["station"],
+            neighborhood = request.POST["neighborhood"],
+            depth_of_excavation = request.POST["depthOfExcavation"],
+            fossil_view = request.POST["fossilView"],
+            cable_length = request.POST["cableLength"],
             date = dateF,
             user = userTable,
             month = month,
             year = year,
             day = day,
+            pdf_file_name = pdfFileName,
         )
         createAssay.save()
+        image_list = []
         for f in request.FILES:
             img_type = validateImageName(f)
             if img_type == "permit":
                 createData = Permit.objects.create(
                     assay = createAssay,
                     permit_img = request.FILES[f],
-                    location_ne = request.POST[f'permit{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.permit_img))
             elif img_type == "teamModel":
                 createData = TeamModel.objects.create(
                     assay = createAssay,
                     team_model_img = request.FILES[f],
-                    location_ne = request.POST[f'teamModel{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.team_model_img))
             elif img_type == "preWorkMeeting":
                 createData = PreworkMeeting.objects.create(
                     assay = createAssay,
                     prework_meeting = request.FILES[f],
-                    location_ne = request.POST[f'preWorkMeeting{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.prework_meeting))
             elif img_type == "riskAssessment":
                 createData = RiskAssessment.objects.create(
                     assay = createAssay,
                     risk_assessment_img = request.FILES[f],
-                    location_ne = request.POST[f'riskAssessment{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.risk_assessment_img))
             elif img_type == "safeWorkProcedure":
                 createData = SafeWorkProcedure.objects.create(
                     assay = createAssay,
                     safe_work_procedures_img = request.FILES[f],
-                    location_ne = request.POST[f'safeWorkProcedure{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.safe_work_procedures_img))
             elif img_type == "paramedic":
                 createData = Paramedic.objects.create(
                     assay = createAssay,
                     paramedic_img = request.FILES[f],
-                    location_ne = request.POST[f'paramedic{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.paramedic_img))
             elif img_type == "fighter":
                 createData = Fighter.objects.create(
                     assay = createAssay,
                     fighter = request.FILES[f],
-                    location_ne = request.POST[f'fighter{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.fighter))
             elif img_type == "assignedTask":
                 createData = AssignedTask.objects.create(
                     assay = createAssay,
                     assigned_task_img = request.FILES[f],
-                    location_ne = request.POST[f'assignedTask{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.assigned_task_img))
             elif img_type == "artificialSecurityCard":
                 createData = ArtificialSecurityCard.objects.create(
                     assay = createAssay,
                     artificial_security_card_img = request.FILES[f],
-                    location_ne = request.POST[f'artificialSecurityCard{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.artificial_security_card_img))
             elif img_type == "recipientCard":
                 createData = RecipientCard.objects.create(
                     assay = createAssay,
                     recipient_card_img = request.FILES[f],
-                    location_ne = request.POST[f'recipientCard{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.recipient_card_img))
             elif img_type == "sourceCard":
                 createData = SourceCard.objects.create(
                     assay = createAssay,
                     source_card_img = request.FILES[f],
-                    location_ne = request.POST[f'sourceCard{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
-            elif img_type == "residenceCard":
-                createData = ResidenceCard.objects.create(
-                    assay = createAssay,
-                    residence_img = request.FILES[f],
-                    location_ne = request.POST[f'residenceCard{f.replace(img_type,"")}NE']
-                )
-                createData.save()
-                createData.updateImage()
+                image_list.append(Image.open(createData.source_card_img))
             elif img_type == "tuvForEquipmentAndDriver":
                 createData = TUVForEquipmentAndDriver.objects.create(
                     assay = createAssay,
                     TUV_for_equipment_and_driver_img = request.FILES[f],
-                    location_ne = request.POST[f'tuvForEquipmentAndDriver{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.TUV_for_equipment_and_driver_img))
             elif img_type == "fireExtinguisher":
                 createData = FireExtinguisher.objects.create(
                     assay = createAssay,
                     fire_extinguisher_img = request.FILES[f],
-                    location_ne = request.POST[f'fireExtinguisher{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.fire_extinguisher_img))
             elif img_type == "firstAid":
                 createData = FirstAid.objects.create(
                     assay = createAssay,
                     first_aid_img = request.FILES[f],
-                    location_ne = request.POST[f'firstAid{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.first_aid_img))
             elif img_type == "workTeam":
                 createData = WorkTeam.objects.create(
                     assay = createAssay,
                     work_team_img = request.FILES[f],
-                    location_ne = request.POST[f'workTeam{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.work_team_img))
             elif img_type == "picturesOfSite":
                 createData = PicturesOfSite.objects.create(
                     assay = createAssay,
                     pictures_of_site_img = request.FILES[f],
-                    location_ne = request.POST[f'picturesOfSite{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.pictures_of_site_img))
             elif img_type == "subscriptionNumber":
                 createData = SubscriptionNumber.objects.create(
                     assay = createAssay,
                     subscription_number_img = request.FILES[f],
-                    location_ne = request.POST[f'subscriptionNumber{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.subscription_number_img))
             elif img_type == "cutterCapacity":
                 createData = CutterCapacity.objects.create(
                     assay = createAssay,
                     cutter_capacity_img = request.FILES[f],
-                    location_ne = request.POST[f'cutterCapacity{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
-            elif img_type == "meterCapacity":
-                createData = MeterCapacity.objects.create(
+                image_list.append(Image.open(createData.cutter_capacity_img))
+            elif img_type == "counter":
+                createData = Counter.objects.create(
                     assay = createAssay,
-                    meter_capacity_img = request.FILES[f],
-                    location_ne = request.POST[f'meterCapacity{f.replace(img_type,"")}NE']
+                    counter_img = request.FILES[f],
                 )
                 createData.save()
                 createData.updateImage()
-            elif img_type == "depthOfExcavation":
-                createData = DepthOfExcavation.objects.create(
+                image_list.append(Image.open(createData.counter_img))
+            elif img_type == "missionLock":
+                createData = MissionLock.objects.create(
                     assay = createAssay,
-                    depth_of_excavation_img = request.FILES[f],
-                    location_ne = request.POST[f'depthOfExcavation{f.replace(img_type,"")}NE']
+                    mission_lock_img = request.FILES[f],
                 )
                 createData.save()
                 createData.updateImage()
-            elif img_type == "fossilView":
-                createData = FossilView.objects.create(
-                    assay = createAssay,
-                    fossil_view_img = request.FILES[f],
-                    location_ne = request.POST[f'fossilView{f.replace(img_type,"")}NE']
-                )
-                createData.save()
-                createData.updateImage()
-            elif img_type == "cableLength":
-                createData = CableLength.objects.create(
-                    assay = createAssay,
-                    cable_length_img = request.FILES[f],
-                    location_ne = request.POST[f'cableLength{f.replace(img_type,"")}NE']
-                )
-                createData.save()
-                createData.updateImage()
+                image_list.append(Image.open(createData.mission_lock_img))
             elif img_type == "safetyBarrier":
                 createData = SafetyBarrier.objects.create(
                     assay = createAssay,
                     safety_barriers_img = request.FILES[f],
-                    location_ne = request.POST[f'safetyBarrier{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.safety_barriers_img))
             elif img_type == "object":
                 createData = Object.objects.create(
                     assay = createAssay,
                     object_img = request.FILES[f],
-                    location_ne = request.POST[f'object{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.object_img))
             elif img_type == "obstacle":
                 createData = Obstacle.objects.create(
                     assay = createAssay,
                     obstacles_img = request.FILES[f],
-                    location_ne = request.POST[f'obstacle{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.obstacles_img))
             elif img_type == "violation":
                 createData = Violation.objects.create(
                     assay = createAssay,
                     violations_img = request.FILES[f],
-                    location_ne = request.POST[f'violation{f.replace(img_type,"")}NE']
                 )
                 createData.save()
                 createData.updateImage()
+                image_list.append(Image.open(createData.violations_img))
+        image_list[0].save(f'media/exportPDF/{pdfFileName}', save_all=True, append_images=image_list[1:])
         return JsonResponse({"ierr":"y"})
     else:
         data = []
@@ -389,6 +373,7 @@ def home(request):
                 if now.strftime('%A') == 'Saturday':dayName = "السبت"
                 values.append([d.assay_num,d.user.consultant_name,f'{d.day} {dayName}'])
             if len(values) != 0:
+                values = values[::-1]
                 data.append([monthName,values])
         data = data[::-1]
         if "getData" in request.GET:
@@ -418,10 +403,12 @@ def home(request):
             data.append(assayGet.mission_num)
             data.append(assayGet.permit_type)
             data.append(assayGet.contractor_name)
-            data.append(assayGet.feeder_num)
-            data.append(assayGet.voltage_type)
-            data.append(assayGet.location)
-            
+            data.append(assayGet.station)
+            data.append(assayGet.neighborhood)
+            data.append(assayGet.depth_of_excavation)
+            data.append(assayGet.fossil_view)
+            data.append(assayGet.cable_length)
+
             images = []
             imageGet = Permit.objects.filter(assay=assayGet)
             for img in imageGet:
@@ -456,9 +443,6 @@ def home(request):
             imageGet = SourceCard.objects.filter(assay=assayGet)
             for img in imageGet:
                 images.append(img.source_card_img.url)
-            imageGet = ResidenceCard.objects.filter(assay=assayGet)
-            for img in imageGet:
-                images.append(img.residence_img.url)
             imageGet = TUVForEquipmentAndDriver.objects.filter(assay=assayGet)
             for img in imageGet:
                 images.append(img.TUV_for_equipment_and_driver_img.url)
@@ -480,18 +464,12 @@ def home(request):
             imageGet = CutterCapacity.objects.filter(assay=assayGet)
             for img in imageGet:
                 images.append(img.cutter_capacity_img.url)
-            imageGet = MeterCapacity.objects.filter(assay=assayGet)
+            imageGet = Counter.objects.filter(assay=assayGet)
             for img in imageGet:
-                images.append(img.meter_capacity_img.url)
-            imageGet = DepthOfExcavation.objects.filter(assay=assayGet)
+                images.append(img.counter_img.url)
+            imageGet = MissionLock.objects.filter(assay=assayGet)
             for img in imageGet:
-                images.append(img.depth_of_excavation_img.url)
-            imageGet = FossilView.objects.filter(assay=assayGet)
-            for img in imageGet:
-                images.append(img.fossil_view_img.url)
-            imageGet = CableLength.objects.filter(assay=assayGet)
-            for img in imageGet:
-                images.append(img.cable_length_img.url)
+                images.append(img.mission_lock_img.url)
             imageGet = SafetyBarrier.objects.filter(assay=assayGet)
             for img in imageGet:
                 images.append(img.safety_barriers_img.url)
@@ -506,7 +484,24 @@ def home(request):
                 images.append(img.violations_img.url)
             data.append(images)
             data.append(assayGet.assay_num)
+            data.append(assayGet.pdf_file_name)
             return JsonResponse({"data":data})
         context['data']=data
 
     return render(request, 'home.html', context)
+
+def export(request, fileName):
+    if request.user.is_authenticated:
+        try:
+            file_path = './media/exportPDF/'+fileName
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+                return response
+        except:
+            file_path = '/home/assays/electricPortalWeb/electric_portal/media/exportPDF/'+fileName
+            with open(file_path, 'rb') as fh:
+                response = HttpResponse(fh.read(), content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
+                return response
+    raise Http404

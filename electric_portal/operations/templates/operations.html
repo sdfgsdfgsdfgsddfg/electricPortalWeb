@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>{% block title %}Electric portal{% endblock %}</title>
+    <title>{% block title %}قسم العمليات والصيانة{% endblock %}</title>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'style/min.style.css' %}">
@@ -41,22 +41,207 @@
           <p>مستشار</p>
         </div>
         <div class="items">
-          <button class="btn selected" id="home"><span class="material-symbols-sharp">home</span><p>الصفحة الرئيسية</p></button>
+          <button class="btn" id="home" onclick="location.href='/'"><span class="material-symbols-sharp">home</span><p>الصفحة الرئيسية</p></button>
           <button class="btn" id="addAssay"><span class="material-symbols-sharp">sticky_note_2</span><p>إضافة مقايسة</p></button>
           {% if user.user_role == "manager" %}<button class="btn" id="consultants" onclick="location.href='/consultants'"><span class="material-symbols-sharp">groups</span><p>الإستشاريين</p></button>{% endif %}
-          <button class="btn" id="operations" onclick="location.href='/operations'"><span class="material-symbols-sharp">engineering</span><p>قسم العمليات والصيانة</p></button>
+          <button class="btn selected" id="operations"><span class="material-symbols-sharp">engineering</span><p>قسم العمليات والصيانة</p></button>
           <button class="btn" id="settings"><span class="material-symbols-sharp">settings</span><p>الضبط</p></button>
         </div>
       </div>
     </aside>
     <main>
       <div class="content">
-        <p class="content-header">المقايسات</p>
-        <div class="list" id="assaysList">
+        <p class="content-header">قسم العمليات والصيانة</p>
+        <button class="btn primary list-button2" style="width:150px;" id="addOperationBtn">إضافة صيانة جديدة</button>
+        <div class="list" id="operationsList">
           {% for d in data %}<p class="list-header">{{d.0}}</p>
-          {% for f in d.1 %}<button data-assay="{{f.0}}" class="btn"><p>{{f.0}}</p><div>{{f.1}}</div><span>{{f.2}}</span></button>
+          {% for f in d.1 %}<button data-operation="{{f.0}}" class="btn"><p>{{f.1}}</p><div>{{f.2}}</div><span>{{f.3}}</span></button>
           {% endfor %}
           {% endfor %}
+        </div>
+      </div>
+      <div class="add-assay" id="addOperationForm">
+        <div class="add-assay-header">
+          <button type="button" class="btn ibtn back-btn3"><span class="material-symbols-sharp">close</span></button>
+          <p class="content-header2">إضافة صيانة جديدة</p>
+        </div>
+        <div class="add-assay-content">
+          <br>
+          <p class="form-header">نوع الصيانة</p>
+          <div class="tabs">
+            <div id="page1">
+              <div class="button-selection">
+                <button class="selection" id="emergency" type="button">طوارئ</button>
+                <button class="selection" id="substitution" type="button">الإحلال</button>
+                <button class="selection" id="reinforcement" type="button">التعزيز</button>
+                <button class="selection" id="effort" type="button">الجهد المتوسط (المشاريع المركزية)</button>
+                <button class="selection" id="violations" type="button">المخالفات</button>
+              </div>
+            </div>
+            <div id="page2">
+              <form method = "POST" data-form id="emergencyForm" enctype="multipart/form-data" class="button-selection fpage">
+                <input type="hidden" name="formType" value="emergencyForm">
+                {% csrf_token %}
+                <div>
+                  <p class="text">طوارئ</p>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="malfunctionNumber" maxlength="50" required>
+                    <label>رقم العطل</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="malfunctionType" maxlength="50" required>
+                    <label>نوع العطل</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="contractor" maxlength="50" required>
+                    <label>المقاول</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="date" name="date" maxlength="50" required>
+                    <label>التاريخ</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="materials" maxlength="50" required>
+                    <label>المواد</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="consultantName" maxlength="50" required>
+                    <label>اسم الإستشاري</label>
+                  </div>
+                </div>
+                <div class="pdf-picker-group" id="emergencyFilesGroup">
+                  <p class="img-picker-header">ملفات PDF المرفقة</p>
+                  <button data-for="emergencyFile" type="button" class="btn"><span class="material-symbols-sharp">add</span>إرفاق ملف</button>
+                  <input type="file" id="emergencyFile" accept=".pdf" hidden>
+                  <div class="selected-images" style="grid-template-columns: auto auto;" id="emergencyFiles">
+                  </div>
+                </div>
+                <button class="primary btn" type="submit">حفظ</button>
+              </form>
+              <form method = "POST" data-form id="substitutionForm" enctype="multipart/form-data" class="button-selection fpage">
+                <input type="hidden" name="formType" value="substitutionForm">
+                {% csrf_token %}
+                <div>
+                  <p class="text">الإحلال</p>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="workNumber" maxlength="50" required>
+                    <label>رقم العمل</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="contractor" maxlength="50" required>
+                    <label>المقاول</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="employmentType" maxlength="50" required>
+                    <label>نوع العمل</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="location" maxlength="50" required>
+                    <label>الموقع</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="date" name="date" required>
+                    <label>التاريخ</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="consultantName" maxlength="50" required>
+                    <label>اسم الإستشاري</label>
+                  </div>
+                </div>
+                <div class="pdf-picker-group" id="substitutionFilesGroup">
+                  <p class="img-picker-header">ملفات PDF المرفقة</p>
+                  <button data-for="substitutionFile" type="button" class="btn"><span class="material-symbols-sharp">add</span>إرفاق ملف</button>
+                  <input type="file" id="substitutionFile" accept=".pdf" hidden>
+                  <div class="selected-images" style="grid-template-columns: auto auto;" id="substitutionFiles">
+                  </div>
+                </div>
+                <button class="primary btn" type="submit">حفظ</button>
+              </form>
+              <form method = "POST" data-form id="reinforcementForm" enctype="multipart/form-data" class="button-selection fpage">
+                <input type="hidden" name="formType" value="reinforcementForm">
+                {% csrf_token %}
+                <div>
+                  <p class="text">التعزيز</p>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="workNumber" maxlength="50" required>
+                    <label>رقم العمل</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="contractor" maxlength="50" required>
+                    <label>المقاول</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="location" maxlength="50" required>
+                    <label>الموقع</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="date" name="date" required>
+                    <label>التاريخ</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="consultantName" maxlength="50" required>
+                    <label>اسم الإستشاري</label>
+                  </div>
+                </div>
+                <div class="pdf-picker-group" id="reinforcementFilesGroup">
+                  <p class="img-picker-header">ملفات PDF المرفقة</p>
+                  <button data-for="reinforcementFile" type="button" class="btn"><span class="material-symbols-sharp">add</span>إرفاق ملف</button>
+                  <input type="file" id="reinforcementFile" accept=".pdf" hidden>
+                  <div class="selected-images" style="grid-template-columns: auto auto;" id="reinforcementFiles">
+                  </div>
+                </div>
+                <button class="primary btn" type="submit">حفظ</button>
+              </form>
+              <form method = "POST" data-form id="effortForm" enctype="multipart/form-data" class="button-selection fpage">
+                <input type="hidden" name="formType" value="effortForm">
+                {% csrf_token %}
+                <div>
+                  <p class="text">الجهد المتوسط (المشاريع المركزية)</p>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="workNumber" maxlength="50" required>
+                    <label>رقم العمل</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="contractor" maxlength="50" required>
+                    <label>المقاول</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="text" name="location" maxlength="50" required>
+                    <label>الموقع</label>
+                  </div>
+                  <div class="material-textfield m2">
+                    <input placeholder=" " type="date" name="date" required>
+                    <label>التاريخ</label>
+                  </div>
+                </div>
+                <div class="pdf-picker-group" id="effortFilesGroup">
+                  <p class="img-picker-header">ملفات PDF المرفقة</p>
+                  <button data-for="effortFile" type="button" class="btn"><span class="material-symbols-sharp">add</span>إرفاق ملف</button>
+                  <input type="file" id="effortFile" accept=".pdf" hidden>
+                  <div class="selected-images" style="grid-template-columns: auto auto;" id="effortFiles">
+                  </div>
+                </div>
+                <button class="primary btn" type="submit">حفظ</button>
+              </form>
+              <form method = "POST" data-form id="violationsForm" enctype="multipart/form-data" class="button-selection fpage">
+                <input type="hidden" name="formType" value="violationsForm">
+                {% csrf_token %}
+                <div>
+                  <p class="text">المخالفات</p>
+                </div>
+                <div class="pdf-picker-group" id="violationsFilesGroup">
+                  <p class="img-picker-header">ملفات PDF المرفقة</p>
+                  <button data-for="violationsFile" type="button" class="btn"><span class="material-symbols-sharp">add</span>إرفاق ملف</button>
+                  <input type="file" id="violationsFile" accept=".pdf" hidden>
+                  <div class="selected-images" style="grid-template-columns: auto auto;" id="violationsFiles">
+                  </div>
+                </div>
+                <button class="primary btn" type="submit">حفظ</button>
+              </form>
+              <br>
+              <br>
+            </div>
+          </div>
         </div>
       </div>
       <form method="POST" data-form class="add-assay" id="addAssayForm" enctype="multipart/form-data">
@@ -299,49 +484,86 @@
       </form>
       <div class="add-assay" id="assayForm">
         <div class="add-assay-header">
-          <button class="btn ibtn back-btn"><span class="material-symbols-sharp">close</span></button>
-          <p class="content-header2" id="assayNum" style="margin-top:20px;"></p>
+          <button class="btn ibtn back-btn3"><span class="material-symbols-sharp">close</span></button>
+          <p class="content-header2" id="assayNum" style="margin-top:20px;">237868</p>
         </div>
         <div class="add-assay-content">
-          
           <br>
-          <button id="exportBtn" class="outline btn" style="width:auto;float:left;margin-left:20px;">تصدير المقايسة</button>
-          <br>
-          <br>
-          <br>
-          <p class="form-header">نوع الطلب</p>
-          <p class="text" id="orderType"></p>
-          <br>
-          <p class="form-header">المهمة</p>
-          <p class="text" id="missionNumber"></p>
-          <br>
-          <p class="form-header">التصريح</p>
-          <p class="text" id="perType"></p>
-          <br>
-          <p class="form-header">المقاول</p>
-          <p class="text" id="conName"></p>
-          <br>
-          <p class="form-header">المحطة</p>
-          <p class="text" id="station"></p>
-          <br>
-          <p class="form-header">الحي</p>
-          <p class="text" id="neighborhood"></p>
-          <br>
-          <p class="form-header">عمق الحفرية</p>
-          <p class="text" id="depthOfExcavation"></p>
-          <br>
-          <p class="form-header">عرض الحفرية</p>
-          <p class="text" id="fossilView"></p>
-          <br>
-          <p class="form-header">طول الكابل</p>
-          <p class="text" id="cableLength"></p>
-          <div class="image-card" id="imagesCard">
+          <div class="labels" id="emergencyLabels">
+            <p class="form-header">رقم العطل</p>
+            <p class="text" id="malfunctionNumber"></p>
+            <br>
+            <p class="form-header">نوع العطل</p>
+            <p class="text" id="malfunctionType"></p>
+            <br>
+            <p class="form-header">المقاول</p>
+            <p class="text" id="contractor"></p>
+            <br>
+            <p class="form-header">التاريخ</p>
+            <p class="text" id="date"></p>
+            <br>
+            <p class="form-header">المواد</p>
+            <p class="text" id="materials"></p>
+            <br>
+            <p class="form-header">اسم الإستشاري</p>
+            <p class="text" id="consultantName"></p>
           </div>
+          <div class="labels" id="substitutionLabels">
+            <p class="form-header">رقم العمل</p>
+            <p class="text" id="workNumber"></p>
+            <br>
+            <p class="form-header">المقاول</p>
+            <p class="text" id="contractor1"></p>
+            <br>
+            <p class="form-header">نوع العمل</p>
+            <p class="text" id="employmentType"></p>
+            <br>
+            <p class="form-header">الموقع</p>
+            <p class="text" id="site"></p>
+            <br>
+            <p class="form-header">التاريخ</p>
+            <p class="text" id="date1"></p>
+            <br>
+            <p class="form-header">اسم الإستشاري</p>
+            <p class="text" id="consultantName1"></p>
+          </div>
+          <div class="labels" id="reinforcementLabels">
+            <p class="form-header">رقم العمل</p>
+            <p class="text" id="workNumber1"></p>
+            <br>
+            <p class="form-header">المقاول</p>
+            <p class="text" id="contractor2"></p>
+            <br>
+            <p class="form-header">الموقع</p>
+            <p class="text" id="site1"></p>
+            <br>
+            <p class="form-header">التاريخ</p>
+            <p class="text" id="date2"></p>
+            <br>
+            <p class="form-header">اسم الإستشاري</p>
+            <p class="text" id="consultantName2"></p>
+          </div>
+          <div class="labels" id="effortLabels">
+            <p class="form-header">رقم العمل</p>
+            <p class="text" id="workNumber2"></p>
+            <br>
+            <p class="form-header">المقاول</p>
+            <p class="text" id="contractor3"></p>
+            <br>
+            <p class="form-header">الموقع</p>
+            <p class="text" id="site2"></p>
+            <br>
+            <p class="form-header">التاريخ</p>
+            <p class="text" id="date3"></p>
+            <br>
+        </div>
+        <p class="form-header">المرفقات</p>
+        <div class="image-card" id="pdfAttachments">
         </div>
       </div>
       <div class="add-assay" id="settingsForm">
         <div class="add-assay-header">
-          <button class="btn ibtn back-btn"><span class="material-symbols-sharp">close</span></button>
+          <button class="btn ibtn back-btn3"><span class="material-symbols-sharp">close</span></button>
           <p class="content-header2" style="margin-top:20px;">الضبط</p>
         </div>
         <div class="add-assay-content">
@@ -358,6 +580,7 @@
   window.addEventListener('load', function() {
     document.body.style.display = 'block';
   });
+  
       </script>
     <script src="{% static 'script/jQuery.js' %}"></script>
     <script src="{% static 'script/script.js' %}"></script>

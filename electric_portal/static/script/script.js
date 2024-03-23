@@ -75,6 +75,22 @@ $(document).on("click","aside ,.nd",function(){
 //     },.2);
 // }
 
+
+$(document).on("click","#addOperationBtn",function(){
+    closeAssayViewer();
+    closeSettings();
+    closeAssayForm();
+    addOperation = document.querySelector("#addOperationForm");
+    addOperation.style.display="block";
+    setTimeout(function(){
+        addOperation.style.marginBottom="0";
+        addOperation.style.opacity="1";
+        addOperation.style.transform="scale(1)";
+    }, 200);
+    document.querySelector(".selected").classList.remove("selected");
+    document.getElementById("operations").classList.add("selected");
+});
+
 $(document).on("click","#addUser",function(){
     closeAssayViewer();
     closeSettings();
@@ -87,7 +103,7 @@ $(document).on("click","#addUser",function(){
         addUser.style.transform="scale(1)";
     }, 200);
     document.querySelector(".selected").classList.remove("selected");
-    document.getElementById("addAssay").classList.add("selected");
+    document.getElementById("consultants").classList.add("selected");
 });
 $(document).on("click","#addAssay",function(){
     closeAssayViewer();
@@ -123,7 +139,7 @@ function closeUserForm(){
             addUser.style.display="none";
         }, 200);
         document.querySelector(".selected").classList.remove("selected");
-        document.getElementById("home").classList.add("selected");
+        document.getElementById("consultants").classList.add("selected");
     }catch{}
 }
 function closeAssayViewer(){
@@ -136,6 +152,23 @@ function closeAssayViewer(){
     }, 200);
     document.querySelector(".selected").classList.remove("selected");
     document.getElementById("home").classList.add("selected");
+}
+function closeOperationForm(){
+    document.querySelectorAll(".fpage").forEach(fpage=>{
+        fpage.removeAttribute("style");
+    });
+    try{
+        document.getElementById("page1").removeAttribute("style");
+        operationForm = document.querySelector("#addOperationForm");
+        operationForm.style.marginBottom="-120px";
+        operationForm.style.opacity="0";
+        operationForm.style.transform="scale(.7)";
+        setTimeout(function(){
+            operationForm.style.display="none";
+        }, 200);
+        document.querySelector(".selected").classList.remove("selected");
+        document.getElementById("operations").classList.add("selected");
+    }catch{}
 }
 function closeSettings(){
     settings = document.querySelector("#settingsForm");
@@ -153,20 +186,33 @@ $(document).on("click",".back-btn,#home",function(){
     closeAssayViewer();
     closeSettings();
     closeUserForm();
+    closeOperationForm();
 });
 $(document).on("click",".back-btn2,#consultants",function(){
     closeAssayForm();
     closeAssayViewer();
     closeSettings();
     closeUserForm();
+    closeOperationForm();
     document.querySelector(".selected").classList.remove("selected");
     document.getElementById("consultants").classList.add("selected");
+});
+
+$(document).on("click",".back-btn3,#operations",function(){
+    closeAssayForm();
+    closeAssayViewer();
+    closeSettings();
+    closeUserForm();
+    closeOperationForm();
+    document.querySelector(".selected").classList.remove("selected");
+    document.getElementById("operations").classList.add("selected");
 });
 
 $(document).on("click","#settings",function(){
     closeAssayForm();
     closeAssayViewer();
     closeUserForm();
+    closeOperationForm();
     settings = document.querySelector("#settingsForm");
     settings.style.display="block";
     setTimeout(function(){
@@ -192,4 +238,41 @@ function closeSearch(){
 }
 $(document).on("click",".close-search",function(){
     closeSearch();
+});
+
+$(document).on("click","#emergency",function(){
+    document.querySelectorAll(".fpage").forEach(fpage=>{
+        fpage.removeAttribute("style");
+    });
+    document.getElementById("emergencyForm").style.display = "block";
+    document.getElementById("page1").style.marginLeft="-100%";
+});
+$(document).on("click","#substitution",function(){
+    document.querySelectorAll(".fpage").forEach(fpage=>{
+        fpage.removeAttribute("style");
+    });
+    document.getElementById("substitutionForm").style.display = "block";
+    document.getElementById("page1").style.marginLeft="-100%";
+});
+
+$(document).on("click","#reinforcement",function(){
+    document.querySelectorAll(".fpage").forEach(fpage=>{
+        fpage.removeAttribute("style");
+    });
+    document.getElementById("reinforcementForm").style.display = "block";
+    document.getElementById("page1").style.marginLeft="-100%";
+});
+$(document).on("click","#effort",function(){
+    document.querySelectorAll(".fpage").forEach(fpage=>{
+        fpage.removeAttribute("style");
+    });
+    document.getElementById("effortForm").style.display = "block";
+    document.getElementById("page1").style.marginLeft="-100%";
+});
+$(document).on("click","#violations",function(){
+    document.querySelectorAll(".fpage").forEach(fpage=>{
+        fpage.removeAttribute("style");
+    });
+    document.getElementById("violationsForm").style.display = "block";
+    document.getElementById("page1").style.marginLeft="-100%";
 });

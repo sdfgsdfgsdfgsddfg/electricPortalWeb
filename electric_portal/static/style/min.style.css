@@ -458,3 +458,51 @@ main[dir="rtl"]{
     transition-duration: .2s;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 }
+button{
+    cursor:pointer;
+}
+
+.button-selection{
+    width:100%;
+    overflow:hidden;
+    margin-block:20px;
+    padding-left:20px;
+}
+.selection{
+    width:100%;
+    font-size:12pt;
+    text-align:left;
+    height:40px;
+    background-color:transparent;
+    border:1px solid #ccc;
+    border-radius:5px;
+    margin-top:10px;
+    padding-left:10px;
+    transition-duration: .2s;
+}
+
+.selection:hover{
+    background-color:#eee;
+}
+
+.tabs{
+    display:flex;
+    flex-direction:row;
+    overflow:hidden;
+    width:350px;
+}
+.tabs > div{
+    min-width:100%;
+    transition-duration:.2s;
+}
+.tabs > div > form{
+    display:none;
+}
+.tabs > div > form > div{
+    width:112%;
+    margin-left:-20px;
+}
+
+.labels{
+    display:none;
+}

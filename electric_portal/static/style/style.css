@@ -95,12 +95,12 @@ main[dir="rtl"] .add-assay{
     right:275px;
 }
 
-.back-btn,.back-btn2{
+.back-btn,.back-btn2,.back-btn3{
     position: absolute;
     left:15px;
     top:15px;
 }
-main[dir="rtl"] .back-btn,main[dir="rtl"] .back-btn2{
+main[dir="rtl"] .back-btn,main[dir="rtl"] .back-btn2, main[dir="rtl"] .back-btn3{
     left:auto;
     right:15px;
 }
@@ -153,10 +153,10 @@ main[dir="rtl"] .back-btn,main[dir="rtl"] .back-btn2{
         border-bottom:1px solid #ccc;
         z-index:10000;
     }
-    .back-btn,.back-btn2{
+    .back-btn,.back-btn2,.back-btn3{
         top:10px;
     }
-    main[dir="rtl"] .back-btn,main[dir="rtl"] .back-btn2{
+    main[dir="rtl"] .back-btn,main[dir="rtl"] .back-btn2,main[dir="rtl"] .back-btn3{
         right:10px;
     }
     .content-header2{
@@ -226,24 +226,27 @@ nav[dir="rtl"] .close-search{
     right:auto;
     z-index:2;
 }
-.img-picker-group{
+.img-picker-group , .pdf-picker-group{
     margin:20px;
     overflow:hidden;
     width:90%;
     max-width:700px;
 }
+.pdf-picker-group{
+    padding-left:20px;
+}
 .img-picker-header{
     color:#000;
     font-size:16pt;
 }
-.img-picker-group > button{
+.img-picker-group > button, .pdf-picker-group > button{
     border:1px solid #ccc;
     height:40px;
     border-radius:5px;
     margin-bottom:20px;
     margin-top:10px;
 }
-.img-picker-group > button span{
+.img-picker-group > button span, .pdf-picker-group > button span{
     margin-top:0px !important;
 }
 .selected-images{
@@ -299,6 +302,10 @@ nav[dir="rtl"] .close-search{
     float:right;
     font-size:14pt;
     margin:13px;
+    overflow:hidden; 
+    white-space:nowrap;
+    width:50%;
+    direction:rtl;
 }
 
 .text{
@@ -308,11 +315,23 @@ nav[dir="rtl"] .close-search{
     width:100%;
 }
 
-.list-button{
+.list-button2{
     position:absolute;
     font-size:12pt;
     right:20px;
     top:20px;
     width:120px;
     height:40px;
+}
+
+#pdfAttachments{
+    width:100%;
+}
+#pdfAttachments a{
+    text-decoration: none;
+    border-bottom:1px solid #ccc;
+    width:100%;
+    padding:15px;
+    font-size:12pt;
+    float:left;
 }
